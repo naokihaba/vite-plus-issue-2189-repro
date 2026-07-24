@@ -1,0 +1,14 @@
+{
+  "name": "vite-plus-issue-2189-repro",
+  "private": true,
+  "packageManager": "bun@1.3.14",
+  "workspaces": [
+    "packages/*"
+  ],
+  "scripts": {
+    "release": "npm run -w @repro/publisher release"
+  },
+  "devDependencies": {
+    "vite-plus": "0.2.4"
+  }
+}
