@@ -9,6 +9,6 @@
     "release": "npm run -w naokihaba release"
   },
   "devDependencies": {
-    "vite-plus": "0.2.4"
+    "vite-plus": "0.2.9"
   }
 }
