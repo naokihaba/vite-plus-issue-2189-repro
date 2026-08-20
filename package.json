@@ -6,7 +6,7 @@
     "packages/*"
   ],
   "scripts": {
-    "release": "npm run -w @repro/publisher release"
+    "release": "npm run -w naokihaba release"
   },
   "devDependencies": {
     "vite-plus": "0.2.4"

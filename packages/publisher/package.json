@@ -1,8 +1,7 @@
 {
-  "name": "@repro/publisher",
-  "private": true,
-  "version": "0.0.0",
+  "name": "naokihaba",
+  "version": "1.0.9",
   "scripts": {
-    "release": "node ../../scripts/check-oidc-env.mjs"
+    "release": "npm stage publish --provenance"
   }
 }
