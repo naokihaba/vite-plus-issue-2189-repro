@@ -7,8 +7,9 @@ let missing = false;
 
 for (const name of names) {
   const value = process.env[name];
-  console.log(`${name}: ${value === undefined ? 'missing' : 'present'}`);
-  missing ||= value === undefined;
+  const isPresent = typeof value === 'string' && value.length > 0;
+  console.log(`${name}: ${isPresent ? 'present' : 'missing-or-empty'}`);
+  missing ||= !isPresent;
 }
 
 if (missing) {
