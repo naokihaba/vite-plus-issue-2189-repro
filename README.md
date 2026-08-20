@@ -3,34 +3,41 @@
 Minimal reproduction for
 [voidzero-dev/vite-plus#2189](https://github.com/voidzero-dev/vite-plus/issues/2189).
 
-## Current result: not reproduced
+## Current result: reproduced
 
-The reported environment-forwarding behavior does not reproduce with the
-command chain and explicit step-level `env` mappings documented in the issue.
-In a GitHub Actions run using `vite-plus@0.2.4`, Bun 1.3.14, and Node.js
-24.18.0, both the control and `vp run` paths received non-empty values for the
-two OIDC environment variables:
+The issue reproduces when package script caching is enabled with
+`run.cache: true`. The workflow uses `vite-plus@0.2.4`, Bun 1.3.14, Node.js
+24.18.0, and the explicit step-level OIDC `env` mappings from the issue.
 
-| Command | `ACTIONS_ID_TOKEN_REQUEST_URL` | `ACTIONS_ID_TOKEN_REQUEST_TOKEN` |
-| --- | --- | --- |
-| `npm run release` | `present` | `present` |
-| `vp run release` | `present` | `present` |
+| Command | npm OIDC result |
+| --- | --- |
+| `npm run release` | Requests a GitHub ID token successfully |
+| `vp run release` | Skips OIDC because the GitHub ID-token environment is incomplete |
 
-See the successful
-[GitHub Actions run](https://github.com/naokihaba/vite-plus-issue-2189-repro/actions/runs/32350671026).
+The `vp run` log contains the reported message:
 
-This repository checks environment-variable forwarding only. It does not run
-`npm stage publish` or publish a package.
+```text
+npm silly oidc Skipped because incorrect permissions for id-token within GitHub workflow
+```
+
+See the
+[reproducing GitHub Actions run](https://github.com/naokihaba/vite-plus-issue-2189-repro/actions/runs/32351710058).
+
+The root `.npmrc` sets `dry-run=true`, so npm executes its real OIDC selection
+and `npm stage publish` flow without creating a staged version or changing the
+registry.
 
 The project mirrors the reported command chain:
 
 ```text
 vp run release
-└─ npm run -w @repro/publisher release
-   └─ node scripts/check-oidc-env.mjs
+└─ npm run -w naokihaba release
+   └─ npm stage publish --provenance
 ```
 
-It uses placeholder values and never prints token contents.
+The package under test is
+[naokihaba](https://www.npmjs.com/package/naokihaba), using the next version
+`1.0.9` in dry-run mode.
 
 ## Setup
 
@@ -38,30 +45,9 @@ It uses placeholder values and never prints token contents.
 bun install
 ```
 
-## Control
-
-```sh
-ACTIONS_ID_TOKEN_REQUEST_URL=https://example.invalid/oidc \
-ACTIONS_ID_TOKEN_REQUEST_TOKEN=repro-token \
-npm run release
-```
-
-Both variables should be reported as `present`.
-
-## Reproduction
-
-```sh
-ACTIONS_ID_TOKEN_REQUEST_URL=https://example.invalid/oidc \
-ACTIONS_ID_TOKEN_REQUEST_TOKEN=repro-token \
-vp run release
-```
-
-Issue #2189 is reproduced if either variable is reported as `missing`.
-
 ## GitHub Actions
 
-The local comparison cannot provide real GitHub OIDC values. The
-`Reproduce issue 2189` workflow runs both paths with `id-token: write`, applies
-the explicit step-level `env` mappings from the issue, and uses the versions
-from the report. It checks whether each value is non-empty without printing
-the value.
+Run the `Reproduce issue 2189` workflow manually. It grants
+`id-token: write`, runs the direct npm control first, and then runs the same
+release script through `vp run`. Local execution cannot provide GitHub's OIDC
+request URL and token, so the behavior must be compared in GitHub Actions.
