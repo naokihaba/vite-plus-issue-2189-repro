@@ -6,7 +6,7 @@ Minimal reproduction for
 ## Current result: reproduced
 
 The issue reproduces when package script caching is enabled with
-`run.cache: true`. The workflow uses `vite-plus@0.2.4`, Bun 1.3.14, Node.js
+`run.cache: true`. The workflow uses `vite-plus@0.2.9`, Bun 1.3.14, Node.js
 24.18.0, and the explicit step-level OIDC `env` mappings from the issue.
 
 | Command | npm OIDC result |
@@ -21,7 +21,7 @@ npm silly oidc Skipped because incorrect permissions for id-token within GitHub 
 ```
 
 See the
-[reproducing GitHub Actions run](https://github.com/naokihaba/vite-plus-issue-2189-repro/actions/runs/32351710058).
+[reproducing GitHub Actions run](https://github.com/naokihaba/vite-plus-issue-2189-repro/actions/runs/32353986859).
 
 The root `.npmrc` sets `dry-run=true`, so npm executes its real OIDC selection
 and `npm stage publish` flow without creating a staged version or changing the
